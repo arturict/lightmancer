@@ -60,30 +60,4 @@ export const api = {
     
     return state;
   },
-  
-  getMusicState: async () => {
-    try {
-      const response = await fetch('http://localhost:8000/api/music');
-      return await response.json();
-    } catch (error) {
-      console.error('Failed to get music state:', error);
-      return { playing: false, volume: 0 };
-    }
-  },
-
-  setMusicState: async (playing: boolean) => {
-    try {
-      const response = await fetch('http://localhost:8000/api/music', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ playing }),
-      });
-      return await response.json();
-    } catch (error) {
-      console.error('Failed to set music state:', error);
-      throw error;
-    }
-  },
 };
