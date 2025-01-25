@@ -6,10 +6,17 @@ import { useTheme } from "./ThemeProvider";
 import { Link } from "react-router-dom";
 import { api } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import { useQuery } from "@tanstack/react-query";
 
 export function MobileNav() {
   const { theme, setTheme } = useTheme();
   const { toast } = useToast();
+
+  const { data: musicState } = useQuery({
+    queryKey: ['music'],
+    queryFn: api.getMusicState,
+    refetchInterval: 1000,
+  });
 
   const handleQuickPowerToggle = async () => {
     try {
@@ -57,7 +64,10 @@ export function MobileNav() {
           <NavigationMenuItem>
             <Link 
               to="/music"
-              className="flex flex-col items-center gap-1 p-2 rounded-xl text-muted-foreground hover:text-primary transition-colors"
+              className={cn(
+                "flex flex-col items-center gap-1 p-2 rounded-xl text-muted-foreground hover:text-primary transition-colors",
+                musicState?.playing && "text-primary animate-glow"
+              )}
             >
               <Music className="w-5 h-5" />
               <span className="text-xs font-medium">Music</span>
