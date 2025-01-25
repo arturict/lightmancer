@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
-import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { HexColorPicker } from "react-colorful";
 
 interface ColorPickerProps {
   rgb: [number, number, number];
@@ -19,16 +19,29 @@ const PRESETS = [
 ];
 
 export function ColorPicker({ rgb, onChange }: ColorPickerProps) {
-  const [r, g, b] = rgb;
   const [activePreset, setActivePreset] = useState<number | null>(null);
 
-  const handleChange = (color: 'r' | 'g' | 'b', value: number) => {
-    const newRgb: [number, number, number] = [...rgb] as [number, number, number];
-    switch (color) {
-      case 'r': newRgb[0] = value; break;
-      case 'g': newRgb[1] = value; break;
-      case 'b': newRgb[2] = value; break;
-    }
+  // Convert RGB to hex for the color picker
+  const rgbToHex = (r: number, g: number, b: number) => 
+    "#" + [r, g, b].map(x => {
+      const hex = x.toString(16);
+      return hex.length === 1 ? "0" + hex : hex;
+    }).join("");
+
+  // Convert hex to RGB
+  const hexToRgb = (hex: string): [number, number, number] => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result 
+      ? [
+          parseInt(result[1], 16),
+          parseInt(result[2], 16),
+          parseInt(result[3], 16)
+        ] as [number, number, number]
+      : [0, 0, 0];
+  };
+
+  const handleColorChange = (hex: string) => {
+    const newRgb = hexToRgb(hex);
     onChange(newRgb);
     setActivePreset(null);
   };
@@ -68,46 +81,18 @@ export function ColorPicker({ rgb, onChange }: ColorPickerProps) {
         ))}
       </div>
 
-      <div className="space-y-4">
-        <div>
-          <label className="text-sm font-medium flex items-center justify-between">
-            Red
-            <span className="text-xs text-muted-foreground">{r}</span>
-          </label>
-          <Slider
-            value={[r]}
-            onValueChange={([value]) => handleChange('r', value)}
-            max={255}
-            step={1}
-            className="cursor-pointer"
+      <div className="w-full aspect-square max-w-md mx-auto relative rounded-xl overflow-hidden">
+        <motion.div
+          initial={{ scale: 0.95, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          <HexColorPicker
+            color={rgbToHex(rgb[0], rgb[1], rgb[2])}
+            onChange={handleColorChange}
+            className="w-full h-full !rounded-xl"
           />
-        </div>
-        <div>
-          <label className="text-sm font-medium flex items-center justify-between">
-            Green
-            <span className="text-xs text-muted-foreground">{g}</span>
-          </label>
-          <Slider
-            value={[g]}
-            onValueChange={([value]) => handleChange('g', value)}
-            max={255}
-            step={1}
-            className="cursor-pointer"
-          />
-        </div>
-        <div>
-          <label className="text-sm font-medium flex items-center justify-between">
-            Blue
-            <span className="text-xs text-muted-foreground">{b}</span>
-          </label>
-          <Slider
-            value={[b]}
-            onValueChange={([value]) => handleChange('b', value)}
-            max={255}
-            step={1}
-            className="cursor-pointer"
-          />
-        </div>
+        </motion.div>
       </div>
 
       <motion.div 
@@ -119,7 +104,7 @@ export function ColorPicker({ rgb, onChange }: ColorPickerProps) {
       >
         <div 
           className="absolute inset-0"
-          style={{ backgroundColor: `rgb(${r},${g},${b})` }}
+          style={{ backgroundColor: `rgb(${rgb.join(',')})` }}
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/10 to-white/10" />
       </motion.div>
