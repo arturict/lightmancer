@@ -6,6 +6,13 @@ export interface LightState {
   rgb: [number, number, number];
 }
 
+function parseColor(colorValue: number): [number, number, number] {
+  const r = (colorValue >> 16) & 255;
+  const g = (colorValue >> 8) & 255;
+  const b = colorValue & 255;
+  return [r, g, b];
+}
+
 export const api = {
   async setPower(state: 'on' | 'off'): Promise<void> {
     const response = await fetch(`${API_BASE}/set_power`, {
@@ -42,6 +49,15 @@ export const api = {
     if (!response.ok) throw new Error('Failed to get light state');
     const data = await response.json();
     console.log('Current state:', data);
-    return data;
+    
+    // Parse the response format
+    const [powerState, brightnessStr, colorValue] = data.response.result;
+    const state: LightState = {
+      power: powerState as 'on' | 'off',
+      brightness: parseInt(brightnessStr, 10),
+      rgb: parseColor(parseInt(colorValue, 10))
+    };
+    
+    return state;
   },
 };
