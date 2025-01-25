@@ -1,10 +1,11 @@
 import { LightControl } from "@/components/LightControl";
 import { WeatherCard } from "@/components/WeatherCard";
+import { MobileNav } from "@/components/MobileNav";
 import { motion } from "framer-motion";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-violet-900 py-8 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-background/90 py-8 px-4 pb-24 md:pb-8">
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -17,6 +18,7 @@ const Index = () => {
         <WeatherCard />
         <LightControl />
       </motion.div>
+      <MobileNav />
     </div>
   );
 }
