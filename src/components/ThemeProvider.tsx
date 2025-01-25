@@ -11,27 +11,31 @@ const ThemeContext = createContext<{
 });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("light");
+  const [theme, setTheme] = useState<Theme>(() => {
+    const hour = new Date().getHours();
+    return hour >= 20 || hour < 8 ? "dark" : "light";
+  });
 
   useEffect(() => {
-    const hour = new Date().getHours();
-    const newTheme = hour >= 20 || hour < 8 ? "dark" : "light";
-    setTheme(newTheme);
+    const checkTime = () => {
+      const hour = new Date().getHours();
+      const newTheme = hour >= 20 || hour < 8 ? "dark" : "light";
+      setTheme(newTheme);
+    };
+
+    // Check every minute
+    const interval = setInterval(checkTime, 60000);
     
-    const interval = setInterval(() => {
-      const currentHour = new Date().getHours();
-      const shouldBeTheme = currentHour >= 20 || currentHour < 8 ? "dark" : "light";
-      if (shouldBeTheme !== theme) {
-        setTheme(shouldBeTheme);
-      }
-    }, 60000); // Check every minute
+    // Initial check
+    checkTime();
 
     return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
-    document.documentElement.classList.remove("light", "dark");
-    document.documentElement.classList.add(theme);
+    const root = window.document.documentElement;
+    root.classList.remove("light", "dark");
+    root.classList.add(theme);
   }, [theme]);
 
   return (

@@ -1,12 +1,8 @@
-import { LightControl } from "@/components/LightControl";
-import { WeatherCard } from "@/components/WeatherCard";
-import { MobileNav } from "@/components/MobileNav";
+import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { Music as MusicIcon } from "lucide-react";
 
-const Index = () => {
-  const isMobile = useIsMobile();
-
+export default function Music() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-background/90 py-8 px-4 pb-24 md:pb-8">
       <motion.div 
@@ -16,14 +12,16 @@ const Index = () => {
         className="container max-w-4xl mx-auto space-y-6"
       >
         <h1 className="text-4xl md:text-5xl font-bold text-center mb-8 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
-          Smart Light Control
+          Music Sync
         </h1>
-        <WeatherCard />
-        <LightControl />
+
+        <Card className="glass-panel p-6 text-center">
+          <MusicIcon className="w-12 h-12 mx-auto mb-4 text-primary" />
+          <p className="text-lg text-muted-foreground">
+            Music sync feature coming soon! Stay tuned for updates.
+          </p>
+        </Card>
       </motion.div>
-      {isMobile && <MobileNav />}
     </div>
   );
 }
-
-export default Index;
