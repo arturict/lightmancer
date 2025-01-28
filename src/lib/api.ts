@@ -1,5 +1,12 @@
 const API_BASE = 'https://lightapi.arturferreira.dev';
 
+// Enhanced type definitions
+export interface ApiResponse<T> {
+  status: 'success' | 'error';
+  response?: T;
+  message?: string;
+}
+
 export interface LightState {
   power: 'on' | 'off';
   brightness: number;
@@ -38,12 +45,6 @@ export interface Timer {
   created_at: string;
 }
 
-export interface UsageData {
-  date: string;
-  seconds: number;
-  hours: number;
-}
-
 export interface DailyUsageResponse {
   status: string;
   daily_usage: Record<string, number>;
@@ -55,59 +56,74 @@ export interface WeeklyUsageResponse {
   hours_last_7_days: number;
 }
 
+// Utility function to handle API errors
+const handleApiError = async (response: Response) => {
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || 'API request failed');
+  }
+  return response.json();
+};
+
 export const api = {
-  async setPower(state: 'on' | 'off'): Promise<void> {
-    const response = await fetch(`${API_BASE}/set_power`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ state }),
-    });
-    if (!response.ok) throw new Error('Failed to set power state');
-    console.log('Power state set:', state);
-  },
-
-  async setBrightness(brightness: number): Promise<void> {
-    const response = await fetch(`${API_BASE}/set_brightness`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ brightness }),
-    });
-    if (!response.ok) throw new Error('Failed to set brightness');
-    console.log('Brightness set:', brightness);
-  },
-
-  async setColor(red: number, green: number, blue: number): Promise<void> {
+  async setColor(red: number = 255, green: number = 255, blue: number = 255): Promise<void> {
+    console.log('Setting color:', { red, green, blue });
     const response = await fetch(`${API_BASE}/set_color`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ red, green, blue }),
     });
-    if (!response.ok) throw new Error('Failed to set color');
-    console.log('Color set:', { red, green, blue });
+    const data = await handleApiError(response);
+    console.log('Color set response:', data);
+  },
+
+  async setPower(state: 'on' | 'off'): Promise<void> {
+    console.log('Setting power state:', state);
+    const response = await fetch(`${API_BASE}/set_power`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ state }),
+    });
+    const data = await handleApiError(response);
+    console.log('Power state set response:', data);
+  },
+
+  async setBrightness(brightness: number): Promise<void> {
+    if (brightness < 1 || brightness > 100) {
+      throw new Error('Brightness must be between 1 and 100');
+    }
+    console.log('Setting brightness:', brightness);
+    const response = await fetch(`${API_BASE}/set_brightness`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ brightness }),
+    });
+    const data = await handleApiError(response);
+    console.log('Brightness set response:', data);
   },
 
   async getState(): Promise<LightState> {
     const response = await fetch(`${API_BASE}/get_state`);
-    if (!response.ok) throw new Error('Failed to get light state');
-    const data = await response.json();
+    const data = await handleApiError(response);
     console.log('Current state:', data);
     
     const [powerState, brightnessStr, colorValue] = data.response.result;
+    const numericColor = parseInt(colorValue, 10);
+    
     return {
       power: powerState as 'on' | 'off',
       brightness: parseInt(brightnessStr, 10),
       rgb: [
-        (colorValue >> 16) & 255,
-        (colorValue >> 8) & 255,
-        colorValue & 255
+        (numericColor >> 16) & 255,
+        (numericColor >> 8) & 255,
+        numericColor & 255
       ]
     };
   },
 
   async getRoutines(): Promise<Record<string, RoutineStep[]>> {
     const response = await fetch(`${API_BASE}/routines`);
-    if (!response.ok) throw new Error('Failed to get routines');
-    const data = await response.json();
+    const data = await handleApiError(response);
     console.log('Fetched routines:', data);
     return data.routines;
   },
