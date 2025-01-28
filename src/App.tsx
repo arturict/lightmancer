@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "./components/ThemeProvider";
 import Index from "./pages/Index";
 import Routines from "./pages/Routines";
+import Statistics from "./pages/Statistics";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/routines" element={<Routines />} />
+            <Route path="/statistics" element={<Statistics />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>

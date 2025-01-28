@@ -1,4 +1,4 @@
-import { Moon, Sun, Power, Home, Clock } from "lucide-react";
+import { Moon, Sun, Power, Home, Clock, BarChart } from "lucide-react";
 import { NavigationMenu, NavigationMenuItem, NavigationMenuList } from "@/components/ui/navigation-menu";
 import { motion } from "framer-motion";
 import { useTheme } from "./ThemeProvider";
@@ -40,7 +40,7 @@ export function MobileNav() {
       animate={{ y: 0 }}
       className="fixed bottom-0 left-0 right-0 md:hidden z-50"
     >
-      <NavigationMenu className="w-full max-w-full p-4 glass-panel rounded-t-2xl">
+      <NavigationMenu className="w-full max-w-full p-4 glass-panel rounded-t-2xl border-t border-border/50">
         <NavigationMenuList className="w-full justify-around">
           <NavigationMenuItem>
             <Link to="/">
@@ -68,6 +68,21 @@ export function MobileNav() {
               >
                 <Clock className="w-5 h-5" />
                 <span className="text-xs font-medium">Routines</span>
+              </motion.button>
+            </Link>
+          </NavigationMenuItem>
+
+          <NavigationMenuItem>
+            <Link to="/statistics">
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-colors ${
+                  location.pathname === '/statistics' ? 'text-primary' : 'text-muted-foreground hover:text-primary'
+                }`}
+              >
+                <BarChart className="w-5 h-5" />
+                <span className="text-xs font-medium">Stats</span>
               </motion.button>
             </Link>
           </NavigationMenuItem>
