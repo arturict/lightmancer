@@ -3,6 +3,7 @@ import { api, LightState } from "@/lib/api";
 import { StatusCard } from "./StatusCard";
 import { BrightnessSlider } from "./BrightnessSlider";
 import { ColorPicker } from "./ColorPicker";
+import { ColorPresets } from "./ColorPresets";
 import { Button } from "@/components/ui/button";
 import { Power } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -132,6 +133,11 @@ export function LightControl() {
       <ColorPicker
         rgb={state.rgb}
         onChange={handleColorChange}
+      />
+
+      <ColorPresets
+        currentColor={state.rgb}
+        onSelectPreset={handleColorChange}
       />
     </div>
   );
