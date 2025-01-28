@@ -34,8 +34,11 @@ export function RoutineManager() {
     try {
       const newRoutine: Routine = {
         routine_name: newRoutineName,
-        steps: [],
+        steps: [] // Initialize with empty steps array as required by API
       };
+      
+      console.log("Creating routine:", newRoutine); // Debug log
+      
       await api.createRoutine(newRoutine);
       queryClient.invalidateQueries({ queryKey: ['routines'] });
       setNewRoutineName("");
@@ -44,6 +47,7 @@ export function RoutineManager() {
         description: "Routine created successfully",
       });
     } catch (error) {
+      console.error("Failed to create routine:", error); // Debug log
       toast({
         title: "Error",
         description: "Failed to create routine",
