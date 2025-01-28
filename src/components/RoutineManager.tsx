@@ -32,9 +32,15 @@ export function RoutineManager() {
     }
 
     try {
+      // Create a basic routine with an empty steps array
       const newRoutine: Routine = {
         routine_name: newRoutineName,
-        steps: []
+        steps: [
+          {
+            method: "set_power",
+            params: { state: "on" }
+          }
+        ]
       };
       
       await api.createRoutine(newRoutine);
