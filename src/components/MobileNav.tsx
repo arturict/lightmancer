@@ -1,13 +1,15 @@
-import { Moon, Sun, Power } from "lucide-react";
+import { Moon, Sun, Power, Home, Clock } from "lucide-react";
 import { NavigationMenu, NavigationMenuItem, NavigationMenuList } from "@/components/ui/navigation-menu";
 import { motion } from "framer-motion";
 import { useTheme } from "./ThemeProvider";
 import { api } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import { Link, useLocation } from "react-router-dom";
 
 export function MobileNav() {
   const { theme, setTheme } = useTheme();
   const { toast } = useToast();
+  const location = useLocation();
 
   const handleQuickPowerToggle = async () => {
     try {
@@ -40,6 +42,36 @@ export function MobileNav() {
     >
       <NavigationMenu className="w-full max-w-full p-4 glass-panel rounded-t-2xl">
         <NavigationMenuList className="w-full justify-around">
+          <NavigationMenuItem>
+            <Link to="/">
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-colors ${
+                  location.pathname === '/' ? 'text-primary' : 'text-muted-foreground hover:text-primary'
+                }`}
+              >
+                <Home className="w-5 h-5" />
+                <span className="text-xs font-medium">Home</span>
+              </motion.button>
+            </Link>
+          </NavigationMenuItem>
+
+          <NavigationMenuItem>
+            <Link to="/routines">
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-colors ${
+                  location.pathname === '/routines' ? 'text-primary' : 'text-muted-foreground hover:text-primary'
+                }`}
+              >
+                <Clock className="w-5 h-5" />
+                <span className="text-xs font-medium">Routines</span>
+              </motion.button>
+            </Link>
+          </NavigationMenuItem>
+
           <NavigationMenuItem>
             <motion.button
               whileHover={{ scale: 1.1 }}

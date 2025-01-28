@@ -1,13 +1,9 @@
-import { LightControl } from "@/components/LightControl";
-import { WeatherCard } from "@/components/WeatherCard";
-import { MobileNav } from "@/components/MobileNav";
-import { UsageStats } from "@/components/UsageStats";
+import { RoutineManager } from "@/components/RoutineManager";
+import { ScheduleList } from "@/components/ScheduleList";
+import { TimerManager } from "@/components/TimerManager";
 import { motion } from "framer-motion";
-import { useIsMobile } from "@/hooks/use-mobile";
 
-const Index = () => {
-  const isMobile = useIsMobile();
-
+const Routines = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-background/90 py-8 px-4 pb-24 md:pb-8">
       <motion.div 
@@ -17,15 +13,14 @@ const Index = () => {
         className="container max-w-4xl mx-auto space-y-6"
       >
         <h1 className="text-4xl md:text-5xl font-bold text-center mb-8 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
-          YeeLight Control
+          Routines & Schedules
         </h1>
-        <WeatherCard />
-        <LightControl />
-        <UsageStats />
+        <RoutineManager />
+        <TimerManager />
+        <ScheduleList />
       </motion.div>
-      {isMobile && <MobileNav />}
     </div>
   );
 }
 
-export default Index;
+export default Routines;
