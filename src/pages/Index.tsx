@@ -16,8 +16,8 @@ const Index = () => {
         transition={{ duration: 0.6 }}
         className="container max-w-4xl mx-auto space-y-6"
       >
-        <h1 className="text-4xl md:text-5xl font-bold text-center mb-8 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
-          YeeLight Control
+        <h1 className="text-4xl md:text-5xl font-bold text-center mb-8 text-gradient">
+          Light Control
         </h1>
         <WeatherCard />
         <LightControl />
