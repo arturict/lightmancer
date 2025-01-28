@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { ScheduleForm } from "@/components/ScheduleForm";
 
 export function RoutineManager() {
   const [newRoutineName, setNewRoutineName] = useState("");
