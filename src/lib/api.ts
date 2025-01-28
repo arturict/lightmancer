@@ -44,6 +44,17 @@ export interface UsageData {
   hours: number;
 }
 
+export interface DailyUsageResponse {
+  status: string;
+  daily_usage: Record<string, number>;
+}
+
+export interface WeeklyUsageResponse {
+  status: string;
+  total_seconds_last_7_days: number;
+  hours_last_7_days: number;
+}
+
 export const api = {
   async setPower(state: 'on' | 'off'): Promise<void> {
     const response = await fetch(`${API_BASE}/set_power`, {
@@ -93,7 +104,6 @@ export const api = {
     };
   },
 
-  // Updated methods for routines
   async getRoutines(): Promise<Record<string, RoutineStep[]>> {
     const response = await fetch(`${API_BASE}/routines`);
     if (!response.ok) throw new Error('Failed to get routines');
@@ -139,7 +149,6 @@ export const api = {
     }
   },
 
-  // Updated methods for schedules
   async getSchedules(): Promise<Schedule[]> {
     const response = await fetch(`${API_BASE}/schedules`);
     if (!response.ok) throw new Error('Failed to get schedules');
@@ -179,7 +188,6 @@ export const api = {
     }
   },
 
-  // Updated methods for timers
   async getTimers(): Promise<Timer[]> {
     const response = await fetch(`${API_BASE}/timers`);
     if (!response.ok) throw new Error('Failed to get timers');
@@ -214,27 +222,19 @@ export const api = {
     }
   },
 
-  // Updated methods for usage tracking
-  async getDailyUsage(): Promise<UsageData[]> {
+  async getDailyUsage(): Promise<DailyUsageResponse> {
     const response = await fetch(`${API_BASE}/usage/daily`);
     if (!response.ok) throw new Error('Failed to get daily usage');
     const data = await response.json();
     console.log('Daily usage data:', data);
-    return Object.entries(data.daily_usage).map(([date, seconds]) => ({
-      date,
-      seconds: seconds as number,
-      hours: Math.round((seconds as number) / 3600 * 100) / 100
-    }));
+    return data;
   },
 
-  async getWeeklyUsage(): Promise<{ seconds: number; hours: number }> {
+  async getWeeklyUsage(): Promise<WeeklyUsageResponse> {
     const response = await fetch(`${API_BASE}/usage/weekly`);
     if (!response.ok) throw new Error('Failed to get weekly usage');
     const data = await response.json();
     console.log('Weekly usage data:', data);
-    return {
-      seconds: data.total_seconds_last_7_days,
-      hours: data.hours_last_7_days
-    };
+    return data;
   }
 };

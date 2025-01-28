@@ -12,24 +12,22 @@ interface UsageStatsProps {
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
 export function UsageStats({ view }: UsageStatsProps) {
-  const { data: dailyUsage = [], isLoading: isDailyLoading } = useQuery({
+  const { data: dailyUsageData, isLoading: isDailyLoading } = useQuery({
     queryKey: ['usage', 'daily'],
     queryFn: async () => {
       const data = await api.getDailyUsage();
-      console.log('Daily usage data:', data);
       return Object.entries(data.daily_usage).map(([date, seconds]) => ({
         date,
-        seconds: seconds as number,
-        hours: Math.round((seconds as number) / 3600 * 100) / 100
+        seconds,
+        hours: Math.round((seconds) / 3600 * 100) / 100
       }));
     },
   });
 
-  const { data: weeklyUsage, isLoading: isWeeklyLoading } = useQuery({
+  const { data: weeklyUsageData, isLoading: isWeeklyLoading } = useQuery({
     queryKey: ['usage', 'weekly'],
     queryFn: async () => {
       const data = await api.getWeeklyUsage();
-      console.log('Weekly usage data:', data);
       return {
         seconds: data.total_seconds_last_7_days,
         hours: data.hours_last_7_days
@@ -40,6 +38,9 @@ export function UsageStats({ view }: UsageStatsProps) {
   if (isDailyLoading || isWeeklyLoading) {
     return <div className="animate-pulse h-64 bg-muted rounded-lg" />;
   }
+
+  const dailyUsage = dailyUsageData || [];
+  const weeklyUsage = weeklyUsageData || { seconds: 0, hours: 0 };
 
   const formattedDailyUsage = dailyUsage.map(day => ({
     ...day,
