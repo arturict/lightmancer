@@ -69,8 +69,8 @@ export function TimerManager() {
   };
 
   return (
-    <Card className="glass-panel p-6 space-y-6">
-      <div className="flex items-center gap-4">
+    <Card className="glass-panel p-4 md:p-6 space-y-4 md:space-y-6">
+      <div className="flex flex-col md:flex-row items-stretch md:items-center gap-2 md:gap-4">
         <Select onValueChange={setSelectedRoutine} value={selectedRoutine}>
           <SelectTrigger className="flex-1">
             <SelectValue placeholder="Select routine" />
@@ -88,16 +88,19 @@ export function TimerManager() {
           placeholder="Duration (seconds)"
           value={duration}
           onChange={(e) => setDuration(e.target.value)}
-          className="w-32"
+          className="w-full md:w-32"
           min="1"
         />
-        <Button onClick={handleCreateTimer}>
+        <Button 
+          onClick={handleCreateTimer}
+          className="w-full md:w-auto whitespace-nowrap"
+        >
           <TimerIcon className="mr-2 h-4 w-4" />
           Create Timer
         </Button>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-2 md:space-y-4">
         <AnimatePresence>
           {timers.map((timer) => (
             <motion.div
@@ -105,10 +108,10 @@ export function TimerManager() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="flex items-center justify-between p-4 rounded-lg bg-background/50 backdrop-blur-sm"
+              className="flex flex-col md:flex-row items-stretch md:items-center justify-between p-4 rounded-lg bg-background/50 backdrop-blur-sm gap-2 md:gap-4"
             >
-              <div className="space-y-1">
-                <span className="font-medium">{timer.routine_name}</span>
+              <div className="space-y-1 text-left">
+                <div className="font-medium">{timer.routine_name}</div>
                 <div className="text-sm text-muted-foreground">
                   {timer.duration} seconds
                 </div>
@@ -117,6 +120,7 @@ export function TimerManager() {
                 variant="destructive"
                 size="icon"
                 onClick={() => handleDeleteTimer(timer.timer_id)}
+                className="h-8 w-8 self-end md:self-center"
               >
                 <Trash className="h-4 w-4" />
               </Button>
