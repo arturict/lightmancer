@@ -1,9 +1,9 @@
+import { StatusCard } from "@/components/StatusCard";
 import { LightControl } from "@/components/LightControl";
 import { WeatherCard } from "@/components/WeatherCard";
 import { MobileNav } from "@/components/MobileNav";
-import { UsageStats } from "@/components/UsageStats";
-import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { motion } from "framer-motion";
 
 const Index = () => {
   const isMobile = useIsMobile();
@@ -19,13 +19,13 @@ const Index = () => {
         <h1 className="text-4xl md:text-5xl font-bold text-center mb-8 text-gradient">
           Light Control
         </h1>
-        <WeatherCard />
+        <StatusCard />
         <LightControl />
-        <UsageStats />
+        <WeatherCard />
       </motion.div>
       {isMobile && <MobileNav />}
     </div>
   );
-}
+};
 
 export default Index;

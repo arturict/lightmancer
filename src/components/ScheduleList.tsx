@@ -1,7 +1,7 @@
 import { api, Schedule } from "@/lib/api";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Trash, Calendar, RefreshCw, Sun } from "lucide-react";
+import { Trash, Calendar, RefreshCw, Sunrise, Sunset } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -51,7 +51,11 @@ export function ScheduleList() {
                 <div className="text-sm text-muted-foreground flex items-center gap-2">
                   {schedule.sun_trigger ? (
                     <>
-                      <Sun className="h-4 w-4" />
+                      {schedule.sun_trigger === "sunrise" ? (
+                        <Sunrise className="h-4 w-4" />
+                      ) : (
+                        <Sunset className="h-4 w-4" />
+                      )}
                       At {schedule.sun_trigger}
                     </>
                   ) : schedule.date_time ? (
