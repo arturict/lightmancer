@@ -3,6 +3,8 @@ import { WeatherCard } from "@/components/WeatherCard";
 import { MobileNav } from "@/components/MobileNav";
 import { RoutineManager } from "@/components/RoutineManager";
 import { ScheduleList } from "@/components/ScheduleList";
+import { TimerManager } from "@/components/TimerManager";
+import { UsageStats } from "@/components/UsageStats";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -23,7 +25,9 @@ const Index = () => {
         <WeatherCard />
         <LightControl />
         <RoutineManager />
+        <TimerManager />
         <ScheduleList />
+        <UsageStats />
       </motion.div>
       {isMobile && <MobileNav />}
     </div>

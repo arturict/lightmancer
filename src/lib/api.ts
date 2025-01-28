@@ -15,6 +15,7 @@ export interface RoutineStep {
     state?: 'on' | 'off';
     brightness?: number;
   };
+  delay?: number;
 }
 
 export interface Routine {
@@ -27,13 +28,20 @@ export interface Schedule {
   routine_name: string;
   date_time?: string;
   interval?: number;
+  sun_trigger?: 'sunrise' | 'sunset' | null;
 }
 
-function parseColor(colorValue: number): [number, number, number] {
-  const r = (colorValue >> 16) & 255;
-  const g = (colorValue >> 8) & 255;
-  const b = colorValue & 255;
-  return [r, g, b];
+export interface Timer {
+  timer_id: string;
+  routine_name: string;
+  duration: number;
+  created_at: string;
+}
+
+export interface UsageData {
+  date: string;
+  seconds: number;
+  hours: number;
 }
 
 export const api = {
@@ -75,28 +83,23 @@ export const api = {
     console.log('Current state:', data);
     
     const [powerState, brightnessStr, colorValue] = data.response.result;
-    const state: LightState = {
+    return {
       power: powerState as 'on' | 'off',
       brightness: parseInt(brightnessStr, 10),
-      rgb: parseColor(parseInt(colorValue, 10))
+      rgb: [
+        (colorValue >> 16) & 255,
+        (colorValue >> 8) & 255,
+        colorValue & 255
+      ]
     };
-    
-    return state;
   },
 
-  // New methods for routines
+  // Updated methods for routines
   async getRoutines(): Promise<Record<string, RoutineStep[]>> {
     const response = await fetch(`${API_BASE}/routines`);
     if (!response.ok) throw new Error('Failed to get routines');
     const data = await response.json();
     return data.routines;
-  },
-
-  async getRoutine(name: string): Promise<RoutineStep[]> {
-    const response = await fetch(`${API_BASE}/routines/${name}`);
-    if (!response.ok) throw new Error('Failed to get routine');
-    const data = await response.json();
-    return data.routine;
   },
 
   async createRoutine(routine: Routine): Promise<void> {
@@ -124,7 +127,7 @@ export const api = {
     if (!response.ok) throw new Error('Failed to run routine');
   },
 
-  // New methods for schedules
+  // Updated methods for schedules
   async getSchedules(): Promise<Schedule[]> {
     const response = await fetch(`${API_BASE}/schedules`);
     if (!response.ok) throw new Error('Failed to get schedules');
@@ -148,5 +151,46 @@ export const api = {
       method: 'DELETE',
     });
     if (!response.ok) throw new Error('Failed to delete schedule');
+  },
+
+  // New methods for timers
+  async getTimers(): Promise<Timer[]> {
+    const response = await fetch(`${API_BASE}/timers`);
+    if (!response.ok) throw new Error('Failed to get timers');
+    const data = await response.json();
+    return data.timers;
+  },
+
+  async createTimer(routineName: string, duration: number): Promise<string> {
+    const response = await fetch(`${API_BASE}/timers`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ routine_name: routineName, duration }),
+    });
+    if (!response.ok) throw new Error('Failed to create timer');
+    const data = await response.json();
+    return data.timer_id;
+  },
+
+  async deleteTimer(timerId: string): Promise<void> {
+    const response = await fetch(`${API_BASE}/timers/${timerId}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) throw new Error('Failed to delete timer');
+  },
+
+  // New methods for usage tracking
+  async getDailyUsage(): Promise<UsageData[]> {
+    const response = await fetch(`${API_BASE}/usage/daily`);
+    if (!response.ok) throw new Error('Failed to get daily usage');
+    const data = await response.json();
+    return data.usage;
+  },
+
+  async getWeeklyUsage(): Promise<{ seconds: number; hours: number }> {
+    const response = await fetch(`${API_BASE}/usage/weekly`);
+    if (!response.ok) throw new Error('Failed to get weekly usage');
+    const data = await response.json();
+    return data;
   },
 };
