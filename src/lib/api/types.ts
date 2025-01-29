@@ -34,3 +34,29 @@ export interface ApiResponse {
     result: [string, string, string];
   };
 }
+
+export interface Schedule {
+  job_id: string;
+  routine_name: string;
+  date_time?: string;
+  interval?: number;
+  sun_trigger?: 'sunrise' | 'sunset';
+}
+
+export interface Timer {
+  timer_id: string;
+  routine_name: string;
+  duration: number;
+  created_at: string;
+}
+
+export interface DailyUsageResponse {
+  status: string;
+  daily_usage: Record<string, number>;
+}
+
+export interface WeeklyUsageResponse {
+  status: string;
+  total_seconds_last_7_days: number;
+  hours_last_7_days: number;
+}

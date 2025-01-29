@@ -73,7 +73,7 @@ export function UsageStats({ view }: UsageStatsProps) {
           <Calendar className="h-8 w-8 text-primary" />
           <div>
             <p className="text-sm text-muted-foreground">Last 7 Days Avg</p>
-            <p className="text-2xl font-bold">{(weeklyUsage?.hours || 0 / 7).toFixed(1)}h</p>
+            <p className="text-2xl font-bold">{(weeklyUsage.hours / 7).toFixed(1)}h</p>
           </div>
         </Card>
       </div>
