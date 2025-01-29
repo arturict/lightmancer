@@ -1,12 +1,21 @@
 import { API_BASE, handleApiError } from './utils';
-import type { Routine, RoutineStep } from './types';
+import type { Routine, RoutinesResponse, SingleRoutineResponse, RoutineStep } from './types';
 
 export const routinesApi = {
-  async getRoutines(): Promise<Record<string, RoutineStep[]>> {
+  async getRoutines(): Promise<RoutinesResponse> {
+    console.log('Fetching all routines');
     const response = await fetch(`${API_BASE}/routines`);
     const data = await handleApiError(response);
-    console.log('Fetched routines:', data);
-    return data.routines;
+    console.log('Routines fetched:', data);
+    return data;
+  },
+
+  async getRoutine(name: string): Promise<SingleRoutineResponse> {
+    console.log('Fetching routine:', name);
+    const response = await fetch(`${API_BASE}/routines/${name}`);
+    const data = await handleApiError(response);
+    console.log('Routine details:', data);
+    return data;
   },
 
   async createRoutine(routine: Routine): Promise<void> {
@@ -16,7 +25,8 @@ export const routinesApi = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(routine),
     });
-    await handleApiError(response);
+    const data = await handleApiError(response);
+    console.log('Routine created:', data);
   },
 
   async deleteRoutine(name: string): Promise<void> {
@@ -24,7 +34,8 @@ export const routinesApi = {
     const response = await fetch(`${API_BASE}/routines/${name}`, {
       method: 'DELETE',
     });
-    await handleApiError(response);
+    const data = await handleApiError(response);
+    console.log('Routine deleted:', data);
   },
 
   async runRoutine(name: string): Promise<void> {
@@ -34,6 +45,7 @@ export const routinesApi = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ routine_name: name }),
     });
-    await handleApiError(response);
+    const data = await handleApiError(response);
+    console.log('Routine executed:', data);
   },
 };

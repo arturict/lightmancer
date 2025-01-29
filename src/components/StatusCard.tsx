@@ -2,14 +2,37 @@ import { LightState } from "@/lib/api";
 import { Card } from "@/components/ui/card";
 import { Power, Sun, Zap } from "lucide-react";
 import { motion } from "framer-motion";
+import { api } from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
 
 interface StatusCardProps {
   state: LightState;
+  onStateChange?: (newState: Partial<LightState>) => void;
 }
 
-export function StatusCard({ state }: StatusCardProps) {
+export function StatusCard({ state, onStateChange }: StatusCardProps) {
   const { power, brightness, rgb } = state;
   const [r, g, b] = rgb;
+  const { toast } = useToast();
+  
+  const handlePowerToggle = async () => {
+    try {
+      const newPower = power === 'on' ? 'off' : 'on';
+      await api.setPower(newPower);
+      onStateChange?.({ power: newPower });
+      
+      toast({
+        title: "Success",
+        description: `Light turned ${newPower}`,
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to toggle power",
+      });
+    }
+  };
   
   return (
     <Card className="glass-panel p-6 relative overflow-hidden backdrop-blur-xl bg-black/10">
@@ -30,6 +53,8 @@ export function StatusCard({ state }: StatusCardProps) {
                 opacity: power === 'on' ? 1 : 0.5,
               }}
               transition={{ duration: 0.3 }}
+              onClick={handlePowerToggle}
+              className="cursor-pointer hover:scale-110 transition-transform"
             >
               <Power className={power === 'on' ? 'text-primary animate-glow' : 'text-muted-foreground'} size={24} />
             </motion.div>

@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Edit2, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 
 interface ColorPreset {
   id: string;
@@ -21,6 +22,8 @@ export function ColorPresets({ currentColor, onSelectPreset }: ColorPresetsProps
     const saved = localStorage.getItem('colorPresets');
     return saved ? JSON.parse(saved) : [];
   });
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingName, setEditingName] = useState("");
   const { toast } = useToast();
 
   const savePreset = () => {
@@ -49,6 +52,25 @@ export function ColorPresets({ currentColor, onSelectPreset }: ColorPresetsProps
     toast({
       title: "Preset deleted",
       description: "Color preset has been removed",
+    });
+  };
+
+  const startEditing = (preset: ColorPreset) => {
+    setEditingId(preset.id);
+    setEditingName(preset.name);
+  };
+
+  const saveEdit = (id: string) => {
+    const updatedPresets = presets.map(preset => 
+      preset.id === id ? { ...preset, name: editingName } : preset
+    );
+    setPresets(updatedPresets);
+    localStorage.setItem('colorPresets', JSON.stringify(updatedPresets));
+    setEditingId(null);
+    
+    toast({
+      title: "Preset updated",
+      description: "Preset name has been updated",
     });
   };
 
@@ -86,19 +108,53 @@ export function ColorPresets({ currentColor, onSelectPreset }: ColorPresetsProps
                     backgroundColor: `rgb(${preset.rgb.join(',')})`,
                   }}
                 />
-                <span className="text-sm font-medium">{preset.name}</span>
+                {editingId === preset.id ? (
+                  <div className="flex gap-2">
+                    <Input
+                      value={editingName}
+                      onChange={(e) => setEditingName(e.target.value)}
+                      className="h-8 text-sm"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                    <Button
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        saveEdit(preset.id);
+                      }}
+                    >
+                      <Check className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <span className="text-sm font-medium">{preset.name}</span>
+                )}
               </button>
-              <Button
-                variant="destructive"
-                size="icon"
-                className="absolute -top-2 -right-2 w-6 h-6 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  deletePreset(preset.id);
-                }}
-              >
-                <Trash2 className="h-3 w-3" />
-              </Button>
+              <div className="absolute -top-2 -right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <Button
+                  variant="default"
+                  size="icon"
+                  className="w-6 h-6 rounded-full"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    startEditing(preset);
+                  }}
+                >
+                  <Edit2 className="h-3 w-3" />
+                </Button>
+                <Button
+                  variant="destructive"
+                  size="icon"
+                  className="w-6 h-6 rounded-full"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deletePreset(preset.id);
+                  }}
+                >
+                  <Trash2 className="h-3 w-3" />
+                </Button>
+              </div>
             </motion.div>
           ))}
         </AnimatePresence>

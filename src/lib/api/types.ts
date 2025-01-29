@@ -1,24 +1,14 @@
-export interface ApiResponse<T> {
-  status: 'success' | 'error';
-  response?: T;
-  message?: string;
-}
+export type PowerState = 'on' | 'off';
 
 export interface LightState {
-  power: 'on' | 'off';
+  power: PowerState;
   brightness: number;
   rgb: [number, number, number];
 }
 
 export interface RoutineStep {
-  method: 'set_color' | 'set_power' | 'set_brightness';
-  params: {
-    red?: number;
-    green?: number;
-    blue?: number;
-    state?: 'on' | 'off';
-    brightness?: number;
-  };
+  method: string;
+  params: Record<string, any>;
   delay?: number;
 }
 
@@ -27,28 +17,20 @@ export interface Routine {
   steps: RoutineStep[];
 }
 
-export interface Schedule {
-  job_id: string;
-  routine_name: string;
-  date_time?: string;
-  interval?: number;
-  sun_trigger?: 'sunrise' | 'sunset' | null;
-}
-
-export interface Timer {
-  timer_id: string;
-  routine_name: string;
-  duration: number;
-  created_at: string;
-}
-
-export interface DailyUsageResponse {
+export interface RoutinesResponse {
   status: string;
-  daily_usage: Record<string, number>;
+  routines: Record<string, RoutineStep[]>;
 }
 
-export interface WeeklyUsageResponse {
+export interface SingleRoutineResponse {
   status: string;
-  total_seconds_last_7_days: number;
-  hours_last_7_days: number;
+  routine: RoutineStep[];
+}
+
+export interface ApiResponse {
+  status: string;
+  response: {
+    id: number;
+    result: [string, string, string];
+  };
 }
