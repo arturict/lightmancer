@@ -1,56 +1,13 @@
-import { Moon, Sun, Power, Home, Clock, BarChart } from "lucide-react";
-import { NavigationMenu, NavigationMenuItem, NavigationMenuList } from "@/components/ui/navigation-menu";
+import { Home, Clock, BarChart } from "lucide-react";
+import { NavigationMenu, NavigationMenuList } from "@/components/ui/navigation-menu";
 import { motion } from "framer-motion";
-import { useTheme } from "./ThemeProvider";
-import { api } from "@/lib/api";
-import { useToast } from "@/hooks/use-toast";
-import { Link, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import { NavItem } from "./nav/NavItem";
+import { PowerButton } from "./nav/PowerButton";
+import { ThemeToggle } from "./nav/ThemeToggle";
 
 export function MobileNav() {
-  const { theme, setTheme } = useTheme();
-  const { toast } = useToast();
   const location = useLocation();
-  const [powerState, setPowerState] = useState<'on' | 'off'>('off');
-
-  const fetchPowerState = async () => {
-    try {
-      const state = await api.getState();
-      setPowerState(state.power);
-    } catch (error) {
-      console.error('Failed to fetch power state:', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchPowerState();
-    // Poll for state updates every 5 seconds
-    const interval = setInterval(fetchPowerState, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const handleQuickPowerToggle = async () => {
-    try {
-      const newPower = powerState === 'on' ? 'off' : 'on';
-      await api.setPower(newPower);
-      setPowerState(newPower);
-      toast({
-        title: `Light ${newPower}`,
-        description: `Light has been turned ${newPower}`,
-      });
-    } catch (error) {
-      console.error('Failed to toggle power:', error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to toggle power",
-      });
-    }
-  };
-
-  const toggleTheme = () => {
-    setTheme(theme === 'light' ? 'dark' : 'light');
-  };
 
   return (
     <motion.div 
@@ -60,82 +17,26 @@ export function MobileNav() {
     >
       <NavigationMenu className="w-full max-w-full p-4 glass-panel rounded-t-2xl border-t border-border/50">
         <NavigationMenuList className="w-full justify-around">
-          <NavigationMenuItem>
-            <Link to="/">
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-colors ${
-                  location.pathname === '/' ? 'text-primary' : 'text-muted-foreground hover:text-primary'
-                }`}
-              >
-                <Home className="w-5 h-5" />
-                <span className="text-xs font-medium">Home</span>
-              </motion.button>
-            </Link>
-          </NavigationMenuItem>
-
-          <NavigationMenuItem>
-            <Link to="/routines">
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-colors ${
-                  location.pathname === '/routines' ? 'text-primary' : 'text-muted-foreground hover:text-primary'
-                }`}
-              >
-                <Clock className="w-5 h-5" />
-                <span className="text-xs font-medium">Routines</span>
-              </motion.button>
-            </Link>
-          </NavigationMenuItem>
-
-          <NavigationMenuItem>
-            <Link to="/statistics">
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-colors ${
-                  location.pathname === '/statistics' ? 'text-primary' : 'text-muted-foreground hover:text-primary'
-                }`}
-              >
-                <BarChart className="w-5 h-5" />
-                <span className="text-xs font-medium">Stats</span>
-              </motion.button>
-            </Link>
-          </NavigationMenuItem>
-
-          <NavigationMenuItem>
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={handleQuickPowerToggle}
-              className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-colors ${
-                powerState === 'on' ? 'text-primary' : 'text-muted-foreground hover:text-primary'
-              }`}
-            >
-              <Power className={`w-5 h-5 ${powerState === 'on' ? 'animate-pulse' : ''}`} />
-              <span className="text-xs font-medium">
-                {powerState === 'on' ? 'On' : 'Off'}
-              </span>
-            </motion.button>
-          </NavigationMenuItem>
-
-          <NavigationMenuItem>
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={toggleTheme}
-              className="flex flex-col items-center gap-1 p-2 rounded-xl text-muted-foreground hover:text-primary transition-colors"
-            >
-              {theme === 'light' ? (
-                <Sun className="w-5 h-5 text-yellow-500" />
-              ) : (
-                <Moon className="w-5 h-5 text-blue-400" />
-              )}
-              <span className="text-xs font-medium">Theme</span>
-            </motion.button>
-          </NavigationMenuItem>
+          <NavItem
+            to="/"
+            icon={Home}
+            label="Home"
+            isActive={location.pathname === '/'}
+          />
+          <NavItem
+            to="/routines"
+            icon={Clock}
+            label="Routines"
+            isActive={location.pathname === '/routines'}
+          />
+          <NavItem
+            to="/statistics"
+            icon={BarChart}
+            label="Stats"
+            isActive={location.pathname === '/statistics'}
+          />
+          <PowerButton />
+          <ThemeToggle />
         </NavigationMenuList>
       </NavigationMenu>
     </motion.div>
