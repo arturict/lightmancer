@@ -3,6 +3,7 @@ import type { Schedule } from './types';
 
 export const schedulesApi = {
   async getSchedules(): Promise<Schedule[]> {
+    console.log('Fetching schedules...');
     const response = await fetch(`${API_BASE}/schedules`);
     const data = await handleApiError(response);
     console.log('Fetched schedules:', data);

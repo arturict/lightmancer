@@ -3,6 +3,7 @@ import type { Timer } from './types';
 
 export const timersApi = {
   async getTimers(): Promise<Timer[]> {
+    console.log('Fetching timers...');
     const response = await fetch(`${API_BASE}/timers`);
     const data = await handleApiError(response);
     console.log('Fetched timers:', data);
