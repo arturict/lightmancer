@@ -5,17 +5,35 @@ import { useTheme } from "./ThemeProvider";
 import { api } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { Link, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 export function MobileNav() {
   const { theme, setTheme } = useTheme();
   const { toast } = useToast();
   const location = useLocation();
+  const [powerState, setPowerState] = useState<'on' | 'off'>('off');
+
+  const fetchPowerState = async () => {
+    try {
+      const state = await api.getState();
+      setPowerState(state.power);
+    } catch (error) {
+      console.error('Failed to fetch power state:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchPowerState();
+    // Poll for state updates every 5 seconds
+    const interval = setInterval(fetchPowerState, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleQuickPowerToggle = async () => {
     try {
-      const currentState = await api.getState();
-      const newPower = currentState.power === 'on' ? 'off' : 'on';
+      const newPower = powerState === 'on' ? 'off' : 'on';
       await api.setPower(newPower);
+      setPowerState(newPower);
       toast({
         title: `Light ${newPower}`,
         description: `Light has been turned ${newPower}`,
@@ -92,10 +110,14 @@ export function MobileNav() {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
               onClick={handleQuickPowerToggle}
-              className="flex flex-col items-center gap-1 p-2 rounded-xl text-muted-foreground hover:text-primary transition-colors"
+              className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-colors ${
+                powerState === 'on' ? 'text-primary' : 'text-muted-foreground hover:text-primary'
+              }`}
             >
-              <Power className="w-5 h-5" />
-              <span className="text-xs font-medium">Power</span>
+              <Power className={`w-5 h-5 ${powerState === 'on' ? 'animate-pulse' : ''}`} />
+              <span className="text-xs font-medium">
+                {powerState === 'on' ? 'On' : 'Off'}
+              </span>
             </motion.button>
           </NavigationMenuItem>
 
