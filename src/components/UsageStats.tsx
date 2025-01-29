@@ -4,17 +4,26 @@ import { Card } from "@/components/ui/card";
 import { Power, Calendar } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-export function UsageStats() {
+interface UsageStatsProps {
+  view?: 'daily' | 'weekly';
+}
+
+export function UsageStats({ view = 'daily' }: UsageStatsProps) {
   const { toast } = useToast();
   const [todayUsage, setTodayUsage] = useState<number>(0);
-  const [weeklyUsage, setWeeklyUsage] = useState<{ hours: number } | null>(null);
+  const [weeklyUsage, setWeeklyUsage] = useState<{ hours: number }>({ hours: 0 });
 
   const fetchUsageData = async () => {
     try {
       const dailyData = await api.getDailyUsage();
       const weeklyData = await api.getWeeklyUsage();
-      setTodayUsage(dailyData.daily_usage);
-      setWeeklyUsage(weeklyData);
+      
+      // Get the latest daily usage value
+      const dailyValues = Object.values(dailyData.daily_usage);
+      const latestDailyUsage = dailyValues[dailyValues.length - 1] || 0;
+      
+      setTodayUsage(latestDailyUsage);
+      setWeeklyUsage({ hours: weeklyData.hours_last_7_days });
     } catch (error) {
       toast({
         title: "Error",
@@ -42,14 +51,14 @@ export function UsageStats() {
           <Calendar className="h-8 w-8 text-primary" />
           <div>
             <p className="text-sm text-muted-foreground">Last 7 Days Avg</p>
-            <p className="text-2xl font-bold">{((weeklyUsage?.hours || 0) / 7).toFixed(1)}h</p>
+            <p className="text-2xl font-bold">{(weeklyUsage.hours / 7).toFixed(1)}h</p>
           </div>
         </Card>
         <Card className="p-4 flex items-center space-x-4">
           <Power className="h-8 w-8 text-primary" />
           <div>
             <p className="text-sm text-muted-foreground">Total Usage</p>
-            <p className="text-2xl font-bold">{(weeklyUsage?.hours || 0).toFixed(1)}h</p>
+            <p className="text-2xl font-bold">{weeklyUsage.hours.toFixed(1)}h</p>
           </div>
         </Card>
       </div>
