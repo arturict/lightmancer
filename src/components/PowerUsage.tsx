@@ -15,10 +15,11 @@ export function PowerUsage() {
   const { data: usageData, isLoading, error } = useQuery({
     queryKey: ['powerUsage'],
     queryFn: async () => {
-      const dailyUsage = await api.getDailyUsage();
-      return dailyUsage.data.map(point => ({
-        time: new Date(point.timestamp).toLocaleTimeString(),
-        usage: point.value
+      const response = await api.getDailyUsage();
+      // Transform the daily_usage object into an array of PowerData
+      return Object.entries(response.daily_usage).map(([timestamp, value]) => ({
+        time: new Date(timestamp).toLocaleTimeString(),
+        usage: value
       }));
     },
     refetchInterval: 30000, // Refetch every 30 seconds
