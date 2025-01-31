@@ -2,14 +2,55 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus, X, Zap, Moon, Sun } from "lucide-react";
+import { api } from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
 
 export function QuickActions() {
   const [isOpen, setIsOpen] = useState(false);
+  const { toast } = useToast();
+
+  const handleAction = async (action: () => Promise<void>, label: string) => {
+    try {
+      await action();
+      toast({
+        title: "Success",
+        description: `${label} activated`,
+      });
+    } catch (error) {
+      console.error(`Failed to execute ${label}:`, error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: `Failed to activate ${label}`,
+      });
+    }
+  };
 
   const actions = [
-    { icon: Sun, label: "Full Brightness", action: () => console.log("Full brightness") },
-    { icon: Moon, label: "Night Mode", action: () => console.log("Night mode") },
-    { icon: Zap, label: "Power Saving", action: () => console.log("Power saving") },
+    {
+      icon: Sun,
+      label: "Full Brightness",
+      action: async () => {
+        await api.setBrightness(100);
+        await api.setPower('on');
+      }
+    },
+    {
+      icon: Moon,
+      label: "Night Mode",
+      action: async () => {
+        await api.setBrightness(20);
+        await api.setColor(255, 147, 41); // Warm orange color
+      }
+    },
+    {
+      icon: Zap,
+      label: "Power Saving",
+      action: async () => {
+        await api.setBrightness(50);
+        await api.setColor(255, 255, 255); // White light
+      }
+    },
   ];
 
   return (
@@ -37,7 +78,7 @@ export function QuickActions() {
                   variant="outline"
                   size="sm"
                   className="w-full glass-panel"
-                  onClick={action.action}
+                  onClick={() => handleAction(action.action, action.label)}
                 >
                   <action.icon className="mr-2 h-4 w-4" />
                   {action.label}
