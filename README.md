@@ -1,69 +1,111 @@
-# Welcome to your Lovable project
+# lightmancer
 
-## Project info
+Smart light controller dashboard built with Vite + React + TypeScript, Tailwind CSS, shadcn/ui, Radix UI, and TanStack Query. It talks to a light control backend via a simple REST API and includes routines, schedules, timers, usage stats, and weather-based presets.
 
-**URL**: https://lovable.dev/projects/c7161f37-3645-4817-b915-fcb59a4f9ab3
+## Quick start
 
-## How can I edit this code?
+Prereqs:
+- Node.js 18+ (use nvm if unsure)
+- pnpm or npm (repo uses npm scripts; bun lockfile also exists, but npm is fine)
 
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/c7161f37-3645-4817-b915-fcb59a4f9ab3) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
+Setup:
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+npm install
+cp .env.example .env # set your values
 npm run dev
 ```
+Dev server runs at http://localhost:8080 (hosted on all interfaces). Preview builds with `npm run preview`.
 
-**Edit a file directly in GitHub**
+## Scripts
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- `npm run dev` — Vite dev server with React Fast Refresh
+- `npm run build` — Production build to `dist/`
+- `npm run build:dev` — Development-mode build (useful for quick deploys with sourcemaps)
+- `npm run preview` — Serve the built app locally
+- `npm run lint` — ESLint (TypeScript + React hooks rules)
 
-**Use GitHub Codespaces**
+## Configuration
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Vite env vars (prefix with VITE_ and stored in `.env`):
+- `VITE_API_BASE` — Base URL of your light backend (default falls back to https://lightapi.arturferreira.dev)
+- `VITE_OPENWEATHER_API_KEY` — OpenWeather API key for weather-based presets
 
-## What technologies are used for this project?
+A sample file is provided in `.env.example`.
 
-This project is built with .
+## Architecture overview
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- Vite + React + TypeScript in `src/`
+- Routing: `react-router-dom` with routes defined in `src/App.tsx`
+- State/data fetching: TanStack Query
+- UI: Tailwind CSS + shadcn/ui components (see `src/components/ui/*`) and Radix primitives
+- Theming: `ThemeProvider` with `next-themes` for dark/light
+- Animations: `framer-motion`
+- API layer: `src/lib/api/*` wraps the backend REST endpoints
+	- Light control: `light.ts` (power, brightness, color, state)
+	- Routines: `routines.ts` (CRUD + run)
+	- Schedules: `schedules.ts`
+	- Timers: `timers.ts`
+	- Usage: `usage.ts`
+	- Shared config: `utils.ts` (reads `VITE_API_BASE`)
+- Weather presets: `src/lib/weather.ts` uses `VITE_OPENWEATHER_API_KEY`
 
-## How can I deploy this project?
+Pages:
+- `/` Dashboard with connection status, light controls, weather card, quick actions
+- `/routines` Manage routines, timers, schedules
+- `/statistics` Usage stats (daily/weekly)
 
-Simply open [Lovable](https://lovable.dev/projects/c7161f37-3645-4817-b915-fcb59a4f9ab3) and click on Share -> Publish.
+## Development tips
 
-## I want to use a custom domain - is that possible?
+- Component library: Most UI primitives live in `src/components/ui`. Higher-level widgets are in `src/components/`.
+- Aliases: `@` points to `src/` (see `vite.config.ts`). Import like `import { api } from '@/lib/api'`.
+- Styling: Tailwind classes. Extra tokens/animations in `tailwind.config.ts`. Global CSS in `src/index.css` and `src/App.css`.
+- To add a new API call, extend a file in `src/lib/api/` or add a new module and export it from `src/lib/api/index.ts`.
+- To add a page, create under `src/pages/` and add a `<Route>` in `src/App.tsx`.
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+## Backend contract (expected)
+
+The app calls a REST API at `VITE_API_BASE` with endpoints like:
+- `POST /set_power` body: `{ state: 'on' | 'off' }`
+- `POST /set_brightness` body: `{ brightness: 1..100 }`
+- `POST /set_color` body: `{ red, green, blue }`
+- `GET /get_state` returns `{ response: { result: [power, brightness, rgbInt] } }`
+- Routines/Timers/Schedules/Usage under `/routines`, `/timers`, `/schedules`, `/usage/*`
+
+If you don't have a backend yet, set `VITE_API_BASE` to a mock server and adapt the API helpers.
+
+## Project structure
+
+```
+src/
+	components/        # feature components (LightControl, WeatherCard, ...)
+		ui/              # shadcn/ui primitives
+		nav/             # nav elements
+	hooks/             # custom hooks
+	lib/
+		api/             # backend API wrappers
+		utils.ts         # UI/util helpers
+		weather.ts       # weather fetch + color presets
+	pages/             # route components
+	main.tsx           # app bootstrap
+	App.tsx            # routes + providers
+```
+
+## Linting and formatting
+
+ESLint config is in `eslint.config.js` (TypeScript + React rules). Run `npm run lint`.
+
+## Deployment
+
+- Static hosting (Netlify/Vercel/GitHub Pages): run `npm run build` and deploy `dist/`.
+- Ensure your environment vars are set on the host (Vercel/Netlify project settings). For static hosting, any secrets must be consumed at build-time only.
+
+## Troubleshooting
+
+- 404s in API calls: verify `VITE_API_BASE` points to your backend and that CORS is allowed.
+- Weather shows fallback: ensure `VITE_OPENWEATHER_API_KEY` is set and not rate-limited.
+- Styles look off: check that Tailwind is scanning `./src/**/*.{ts,tsx}` and that classes aren't purged.
+- Port in use: change `server.port` in `vite.config.ts`.
+
+---
+
+Happy hacking! If you're “vibecoding,” the sections above should be enough to run, edit, and extend the app safely.

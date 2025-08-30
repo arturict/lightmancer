@@ -1,4 +1,5 @@
-const WEATHER_API_KEY = '818686b570540300f064f9d98566b5c0';
+// Read from Vite env; provide a demo/fallback key for local dev only
+const WEATHER_API_KEY = ((import.meta as any)?.env?.VITE_OPENWEATHER_API_KEY as string | undefined) || 'demo';
 
 export interface WeatherData {
   condition: 'sunny' | 'rainy' | 'cloudy' | 'night';
