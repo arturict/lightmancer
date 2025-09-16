@@ -96,6 +96,70 @@ ESLint config is in `eslint.config.js` (TypeScript + React rules). Run `npm run 
 
 ## Deployment
 
+### Docker Deployment
+
+The app can be deployed as a Docker container:
+
+#### Quick Start with Docker
+
+```sh
+# Build the application locally first
+npm run build
+
+# Build and run the Docker container
+docker build -t lightmancer .
+docker run -p 3000:80 lightmancer
+```
+
+The app will be available at http://localhost:3000
+
+#### Using Docker Compose
+
+```sh
+# Build the application first
+npm run build
+
+# Start with docker-compose
+docker-compose up -d
+```
+
+#### Backend Configuration
+
+The backend API endpoint is configured at build time via environment variables:
+- Default: `https://lightmancerbackend.arturs.software`
+- Alternative: `https://lightmancerbackend.artur.engineer`
+
+To use a custom backend, set the environment variable before building:
+```sh
+export VITE_API_BASE=https://your-backend-domain.com
+npm run build
+docker build -t lightmancer .
+```
+
+#### Production Deployment
+
+For production deployment:
+
+1. **Build the application with production config:**
+   ```sh
+   cp .env.example .env
+   # Edit .env with your production values
+   npm run build
+   ```
+
+2. **Build and deploy the container:**
+   ```sh
+   docker build -t lightmancer:prod .
+   docker run -d -p 80:80 --restart unless-stopped lightmancer:prod
+   ```
+
+3. **Or use docker-compose for easier management:**
+   ```sh
+   docker-compose up -d
+   ```
+
+### Static Hosting (Alternative)
+
 - Static hosting (Netlify/Vercel/GitHub Pages): run `npm run build` and deploy `dist/`.
 - Ensure your environment vars are set on the host (Vercel/Netlify project settings). For static hosting, any secrets must be consumed at build-time only.
 
