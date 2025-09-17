@@ -1,14 +1,23 @@
-# Production stage only - expects pre-built dist folder
+# Build stage
+FROM node:20-alpine AS build
+WORKDIR /app
+
+# Install dependencies
+COPY package.json package-lock.json ./
+RUN npm ci --production=false
+
+# Copy source and build
+COPY . .
+RUN npm run build
+
+# Runtime stage
 FROM nginx:alpine
 
-# Copy pre-built application to nginx
-COPY dist /usr/share/nginx/html
+# Copy built assets to nginx
+COPY --from=build /app/dist /usr/share/nginx/html
 
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# Expose port 80
 EXPOSE 80
-
-# Start nginx
 CMD ["nginx", "-g", "daemon off;"]

@@ -12,6 +12,12 @@ if [ ! -f .env ]; then
     echo "⚠️  Please edit .env with your configuration before building for production"
 fi
 
+# Install dependencies if needed
+if [ ! -d node_modules ]; then
+  echo "📦 Installing dependencies..."
+  npm ci
+fi
+
 # Build the React application
 echo "🏗️  Building React application..."
 npm run build
