@@ -21,6 +21,7 @@ Dev server runs at http://localhost:8080 (hosted on all interfaces). Preview bui
 - `npm run dev` — Vite dev server with React Fast Refresh
 - `npm run build` — Production build to `dist/`
 - `npm run build:dev` — Development-mode build (useful for quick deploys with sourcemaps)
+- `npm start` — Serve the built app for production (used by PaaS platforms)
 - `npm run preview` — Serve the built app locally
 - `npm run lint` — ESLint (TypeScript + React hooks rules)
 
@@ -98,7 +99,7 @@ ESLint config is in `eslint.config.js` (TypeScript + React rules). Run `npm run 
 
 ### PaaS Deployment (Recommended)
 
-The app is optimized for deployment on modern PaaS platforms that use nixPacks (like Railway, Render, etc.):
+The app is optimized for deployment on modern PaaS platforms that use nixPacks (like Railway, Render, Fly.io, etc.):
 
 1. **Connect your repository** to your PaaS provider
 2. **Set environment variables** in your platform's dashboard:
@@ -111,6 +112,8 @@ The app is optimized for deployment on modern PaaS platforms that use nixPacks (
    - Install dependencies with `npm ci`
    - Build the app with `npm run build`
    - Serve it with `npm start`
+
+The app will be available on your platform's provided URL. No additional configuration needed!
 
 #### Backend Configuration
 
