@@ -21,6 +21,7 @@ Dev server runs at http://localhost:8080 (hosted on all interfaces). Preview bui
 - `npm run dev` — Vite dev server with React Fast Refresh
 - `npm run build` — Production build to `dist/`
 - `npm run build:dev` — Development-mode build (useful for quick deploys with sourcemaps)
+- `npm start` — Serve the built app for production (used by PaaS platforms)
 - `npm run preview` — Serve the built app locally
 - `npm run lint` — ESLint (TypeScript + React hooks rules)
 
@@ -96,32 +97,23 @@ ESLint config is in `eslint.config.js` (TypeScript + React rules). Run `npm run 
 
 ## Deployment
 
-### Docker Deployment
+### PaaS Deployment (Recommended)
 
-The app can be deployed as a Docker container:
+The app is optimized for deployment on modern PaaS platforms that use nixPacks (like Railway, Render, Fly.io, etc.):
 
-#### Quick Start with Docker
+1. **Connect your repository** to your PaaS provider
+2. **Set environment variables** in your platform's dashboard:
+   ```
+   VITE_API_BASE=https://your-backend-domain.com
+   VITE_OPENWEATHER_API_KEY=your_openweather_key_here
+   ```
+3. **Deploy** - the platform will automatically:
+   - Detect this as a Node.js project
+   - Install dependencies with `npm ci`
+   - Build the app with `npm run build`
+   - Serve it with `npm start`
 
-```sh
-# Build the application locally first
-npm run build
-
-# Build and run the Docker container
-docker build -t lightmancer .
-docker run -p 3000:80 lightmancer
-```
-
-The app will be available at http://localhost:3000
-
-#### Using Docker Compose
-
-```sh
-# Build the application first
-npm run build
-
-# Start with docker-compose
-docker-compose up -d
-```
+The app will be available on your platform's provided URL. No additional configuration needed!
 
 #### Backend Configuration
 
@@ -129,34 +121,7 @@ The backend API endpoint is configured at build time via environment variables:
 - Default: `https://lightmancerbackend.arturs.software`
 - Alternative: `https://lightmancerbackend.artur.engineer`
 
-To use a custom backend, set the environment variable before building:
-```sh
-export VITE_API_BASE=https://your-backend-domain.com
-npm run build
-docker build -t lightmancer .
-```
-
-#### Production Deployment
-
-For production deployment:
-
-1. **Build the application with production config:**
-   ```sh
-   cp .env.example .env
-   # Edit .env with your production values
-   npm run build
-   ```
-
-2. **Build and deploy the container:**
-   ```sh
-   docker build -t lightmancer:prod .
-   docker run -d -p 80:80 --restart unless-stopped lightmancer:prod
-   ```
-
-3. **Or use docker-compose for easier management:**
-   ```sh
-   docker-compose up -d
-   ```
+Set `VITE_API_BASE` in your platform's environment variables to use a custom backend.
 
 ### Static Hosting (Alternative)
 
