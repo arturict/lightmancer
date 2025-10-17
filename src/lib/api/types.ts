@@ -51,12 +51,10 @@ export interface Timer {
 }
 
 export interface DailyUsageResponse {
-  status: string;
-  daily_usage: Record<string, number>;
+  daily_usage_seconds: Record<string, number>;
 }
 
 export interface WeeklyUsageResponse {
-  status: string;
   total_seconds_last_7_days: number;
   hours_last_7_days: number;
 }

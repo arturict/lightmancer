@@ -18,9 +18,11 @@ export function UsageStats({ view = 'daily' }: UsageStatsProps) {
       const dailyData = await api.getDailyUsage();
       const weeklyData = await api.getWeeklyUsage();
       
-      // Get the latest daily usage value
-      const dailyValues = Object.values(dailyData.daily_usage);
-      const latestDailyUsage = dailyValues[dailyValues.length - 1] || 0;
+      // Get the latest daily usage value (convert seconds to hours)
+      const dailyValues = Object.values(dailyData.daily_usage_seconds);
+      const latestDailyUsage = dailyValues.length > 0 
+        ? dailyValues[dailyValues.length - 1] / 3600 
+        : 0;
       
       setTodayUsage(latestDailyUsage);
       setWeeklyUsage({ hours: weeklyData.hours_last_7_days });

@@ -16,10 +16,10 @@ export function PowerUsage() {
     queryKey: ['powerUsage'],
     queryFn: async () => {
       const response = await api.getDailyUsage();
-      // Transform the daily_usage object into an array of PowerData
-      return Object.entries(response.daily_usage).map(([timestamp, value]) => ({
+      // Transform the daily_usage_seconds object into an array of PowerData
+      return Object.entries(response.daily_usage_seconds).map(([timestamp, seconds]) => ({
         time: new Date(timestamp).toLocaleTimeString(),
-        usage: value
+        usage: seconds / 3600 // Convert seconds to hours
       }));
     },
     refetchInterval: 30000, // Refetch every 30 seconds

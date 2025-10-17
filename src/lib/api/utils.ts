@@ -1,4 +1,4 @@
-export const API_BASE = 'https://lightapi.arturferreira.dev';
+export const API_BASE = 'https://lightmancer-v2-api-dev.artur.engineer';
 
 export const handleApiError = async (response: Response) => {
   if (!response.ok) {
